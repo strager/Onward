@@ -84,8 +84,10 @@ function showDivider(i: number): boolean {
 
 .divider {
   width: 1px;
-  align-self: center;
-  height: 60%;
+  /* Stretch to the nav's height and inset with margin instead of a percentage
+     height: the nav has no explicit height, so `height: 60%` collapsed to 0. */
+  align-self: stretch;
+  margin: 12px 0;
   background: transparent;
   flex-shrink: 0;
 }
