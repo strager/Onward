@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { activeChallenges, countToday, logOutcome } from '@/store'
+import ChallengeRow from '@/components/ChallengeRow.vue'
+import { activeChallenges } from '@/store'
 </script>
 
 <template>
@@ -13,29 +14,8 @@ import { activeChallenges, countToday, logOutcome } from '@/store'
     </p>
 
     <ul v-else class="challenges">
-      <li v-for="challenge in activeChallenges" :key="challenge.id" class="challenge">
-        <div class="info">
-          <span class="name">{{ challenge.name }}</span>
-          <span class="count">{{ countToday(challenge.id) }} today</span>
-        </div>
-        <div class="buttons">
-          <button
-            type="button"
-            class="face"
-            aria-label="Log a good interaction"
-            @click="logOutcome(challenge.id, 'success')"
-          >
-            😊
-          </button>
-          <button
-            type="button"
-            class="face"
-            aria-label="Log a tough interaction"
-            @click="logOutcome(challenge.id, 'failure')"
-          >
-            😟
-          </button>
-        </div>
+      <li v-for="challenge in activeChallenges" :key="challenge.id">
+        <ChallengeRow :challenge="challenge" />
       </li>
     </ul>
   </main>
@@ -66,58 +46,5 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.challenge {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid #e3e3e3;
-  border-radius: 0.75rem;
-  background: #fff;
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.name {
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
-
-.count {
-  font-size: 0.85rem;
-  color: #777;
-}
-
-.buttons {
-  display: flex;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.face {
-  font-size: 1.6rem;
-  line-height: 1;
-  width: 3rem;
-  height: 3rem;
-  border: 1px solid #e3e3e3;
-  border-radius: 0.75rem;
-  background: #fafafa;
-  cursor: pointer;
-}
-
-.face:hover {
-  background: #f0f0f0;
-}
-
-.face:active {
-  transform: scale(0.94);
 }
 </style>

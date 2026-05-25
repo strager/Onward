@@ -104,6 +104,15 @@ export function logOutcome(id: string, outcome: Outcome): void {
   persistEvents(id)
 }
 
+/** Remove the most recent `count` events from a challenge (used by undo). */
+export function removeLastEvents(id: string, count: number): void {
+  if (count <= 0) return
+  const list = events[id]
+  if (list === undefined) return
+  list.splice(Math.max(0, list.length - count), count)
+  persistEvents(id)
+}
+
 /** How many interactions were logged for this challenge on the current local day. */
 export function countToday(id: string): number {
   const list = events[id]
