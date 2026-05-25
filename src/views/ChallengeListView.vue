@@ -2,16 +2,24 @@
 import { RouterLink } from 'vue-router'
 import ChallengeRow from '@/components/ChallengeRow.vue'
 import { activeChallenges } from '@/store'
+import squiggle from '@/assets/flourish-squiggle.svg'
+import plant from '@/assets/illus-plant.svg'
 </script>
 
 <template>
   <main class="screen">
-    <h1>Challenges</h1>
+    <header class="screen-header">
+      <h1 class="screen-title">Challenges</h1>
+      <img :src="squiggle" class="squiggle" alt="" />
+    </header>
 
-    <p v-if="activeChallenges.length === 0" class="empty">
-      No challenges yet.
-      <RouterLink to="/settings">Add your first challenge</RouterLink> to get started.
-    </p>
+    <div v-if="activeChallenges.length === 0" class="card empty">
+      <img :src="plant" class="empty-art" alt="" />
+      <p class="empty-text">
+        No challenges yet.
+        <RouterLink to="/settings" class="empty-link">Add your first challenge</RouterLink> to begin.
+      </p>
+    </div>
 
     <ul v-else class="challenges">
       <li v-for="challenge in activeChallenges" :key="challenge.id">
@@ -22,21 +30,10 @@ import { activeChallenges } from '@/store'
 </template>
 
 <style scoped>
-.screen {
-  max-width: 32rem;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
-  font-family: system-ui, sans-serif;
-}
-
-h1 {
-  margin: 0 0 1.25rem;
-  font-size: 1.5rem;
-}
-
-.empty {
-  color: #555;
-  line-height: 1.5;
+.squiggle {
+  display: block;
+  width: 150px;
+  margin-top: -2px;
 }
 
 .challenges {
@@ -45,6 +42,29 @@ h1 {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 10px;
+}
+
+.empty {
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.empty-art {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 12px;
+}
+
+.empty-text {
+  margin: 0;
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-muted);
+}
+
+.empty-link {
+  color: var(--primary);
+  font-weight: var(--fw-bold);
 }
 </style>

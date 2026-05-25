@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import AppIcon from '@/components/AppIcon.vue'
 import {
   activeChallenges,
   addChallenge,
@@ -28,7 +29,7 @@ function commitRename(challenge: Challenge, event: Event): void {
 
 function archive(challenge: Challenge): void {
   const ok = window.confirm(
-    `Archive "${challenge.name}"? It will move to your archived list and leave the main screen.`,
+    `Archive "${challenge.name}"? It moves to your archived list and leaves the Challenges screen.`,
   )
   if (ok) archiveChallenge(challenge.id)
 }
@@ -36,145 +37,101 @@ function archive(challenge: Challenge): void {
 
 <template>
   <main class="screen">
-    <h1>Settings</h1>
+    <header class="screen-header">
+      <h1 class="screen-title">Settings</h1>
+    </header>
 
     <form class="add" @submit.prevent="add">
       <input
         v-model="newName"
+        class="input"
         type="text"
-        placeholder="New challenge name"
+        placeholder="Name a new challenge"
         aria-label="New challenge name"
       />
-      <button type="submit">Add</button>
+      <button type="submit" class="btn btn-primary">
+        <AppIcon name="plus" :size="18" :sw="2.6" />
+        Add
+      </button>
     </form>
 
-    <ul v-if="activeChallenges.length > 0" class="active">
-      <li v-for="challenge in activeChallenges" :key="challenge.id">
+    <ul v-if="activeChallenges.length > 0" class="list">
+      <li v-for="challenge in activeChallenges" :key="challenge.id" class="item">
         <input
-          class="rename"
+          class="input rename"
           :value="challenge.name"
           aria-label="Challenge name"
           @change="commitRename(challenge, $event)"
         />
-        <button type="button" class="archive" @click="archive(challenge)">Archive</button>
+        <button type="button" class="btn btn-ghost btn-sm" @click="archive(challenge)">
+          Archive
+        </button>
       </li>
     </ul>
-    <p v-else class="empty">Add a challenge above to start tracking.</p>
+    <p v-else class="empty-text">Add a challenge above to start tracking.</p>
 
     <section v-if="archivedChallenges.length > 0" class="archived">
-      <h2>Archived</h2>
-      <ul>
-        <li v-for="challenge in archivedChallenges" :key="challenge.id">{{ challenge.name }}</li>
+      <div class="eyebrow">Archived</div>
+      <ul class="list">
+        <li v-for="challenge in archivedChallenges" :key="challenge.id" class="archived-item">
+          {{ challenge.name }}
+        </li>
       </ul>
     </section>
   </main>
 </template>
 
 <style scoped>
-.screen {
-  max-width: 32rem;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
-  font-family: system-ui, sans-serif;
-}
-
-h1 {
-  margin: 0 0 1.25rem;
-  font-size: 1.5rem;
-}
-
 .add {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: 10px;
+  margin-bottom: 22px;
 }
 
-.add input {
+.add .input {
   flex: 1;
   min-width: 0;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  font: inherit;
 }
 
-.add button {
-  padding: 0.6rem 1.1rem;
-  border: none;
-  border-radius: 0.5rem;
-  background: #2f6fed;
-  color: #fff;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.active {
+.list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 10px;
 }
 
-.active li {
+.item {
   display: flex;
-  gap: 0.5rem;
+  gap: 10px;
   align-items: center;
 }
 
 .rename {
   flex: 1;
   min-width: 0;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid #ddd;
-  border-radius: 0.5rem;
-  font: inherit;
+  font-weight: var(--fw-bold);
 }
 
-.archive {
-  padding: 0.55rem 0.9rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  background: #fafafa;
-  font: inherit;
-  cursor: pointer;
-}
-
-.archive:hover {
-  background: #f0f0f0;
-}
-
-.empty {
-  color: #777;
+.empty-text {
+  color: var(--fg-muted);
 }
 
 .archived {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
+  margin-top: 32px;
 }
 
-.archived h2 {
-  font-size: 1rem;
-  color: #777;
-  margin: 0 0 0.6rem;
+.archived .eyebrow {
+  margin-bottom: 10px;
+  color: var(--fg-subtle);
 }
 
-.archived ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.archived li {
-  padding: 0.5rem 0.7rem;
-  color: #999;
-  background: #f7f7f7;
-  border-radius: 0.5rem;
+.archived-item {
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  background: var(--cream-200);
+  color: var(--fg-muted);
+  font-weight: var(--fw-semi);
 }
 </style>

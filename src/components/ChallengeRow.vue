@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed, onUnmounted, reactive } from 'vue'
+import AppIcon from '@/components/AppIcon.vue'
+import MoodFace from '@/components/MoodFace.vue'
 import { countToday, logOutcome, removeLastEvents } from '@/store'
 import type { Challenge, Outcome } from '@/types'
 
 const props = defineProps<{ challenge: Challenge }>()
 
 const UNDO_WINDOW_MS = 30_000
+
+// Faces: success reads as a green smile, failure as a warm-orange slight frown (not "rough").
+const FACE_COLOR = { success: 'var(--success-600)', failure: 'var(--orange-600)' } as const
 
 // Ephemeral "recent batch": presses since the undo button appeared. Not persisted.
 const recent = reactive<Record<Outcome, number>>({ success: 0, failure: 0 })
@@ -50,21 +55,21 @@ onUnmounted(clearTimer)
 </script>
 
 <template>
-  <div class="row">
+  <div class="card row">
     <div class="info">
       <span class="name">{{ challenge.name }}</span>
-      <span class="count">{{ countToday(challenge.id) }} today</span>
+      <span class="count numeric">{{ countToday(challenge.id) }} today</span>
     </div>
     <div class="buttons">
       <button
         type="button"
-        class="undo"
+        class="icon-btn undo"
         :class="{ hidden: recentTotal === 0 }"
         :disabled="recentTotal === 0"
         aria-label="Undo recent presses"
         @click="undo"
       >
-        ⟲
+        <AppIcon name="undo" :size="20" />
       </button>
       <button
         type="button"
@@ -72,8 +77,8 @@ onUnmounted(clearTimer)
         aria-label="Log a good interaction"
         @click="press('success')"
       >
-        😊
-        <span v-if="recent.success > 0" class="badge">{{ recent.success }}</span>
+        <MoodFace tone="good" :size="44" :sw="1.3" :outline="false" :color="FACE_COLOR.success" />
+        <span v-if="recent.success > 0" class="badge numeric">{{ recent.success }}</span>
       </button>
       <button
         type="button"
@@ -81,8 +86,8 @@ onUnmounted(clearTimer)
         aria-label="Log a tough interaction"
         @click="press('failure')"
       >
-        😟
-        <span v-if="recent.failure > 0" class="badge">{{ recent.failure }}</span>
+        <MoodFace tone="low" :size="44" :sw="1.3" :outline="false" :color="FACE_COLOR.failure" />
+        <span v-if="recent.failure > 0" class="badge numeric">{{ recent.failure }}</span>
       </button>
     </div>
   </div>
@@ -93,87 +98,82 @@ onUnmounted(clearTimer)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid #e3e3e3;
-  border-radius: 0.75rem;
-  background: #fff;
+  gap: 14px;
+  padding: 16px;
 }
 
 .info {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 2px;
   min-width: 0;
 }
 
 .name {
-  font-weight: 600;
+  font-weight: var(--fw-extra);
+  font-size: 16px;
+  color: var(--ink-900);
   overflow-wrap: anywhere;
 }
 
 .count {
-  font-size: 0.85rem;
-  color: #777;
+  font-size: 13px;
+  color: var(--fg-muted);
 }
 
 .buttons {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-.undo {
-  font-size: 1.4rem;
-  line-height: 1;
-  width: 2.4rem;
-  height: 3rem;
-  border: none;
-  background: none;
-  color: #888;
-  cursor: pointer;
-}
-
-/* Hidden but still occupies space, so the row never shifts when undo appears. */
+/* Undo: hidden but still occupies space, so the row never shifts when it appears. */
 .undo.hidden {
   visibility: hidden;
 }
 
 .face {
   position: relative;
-  font-size: 1.6rem;
-  line-height: 1;
-  width: 3rem;
-  height: 3rem;
-  border: 1px solid #e3e3e3;
-  border-radius: 0.75rem;
-  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 2px solid var(--ink-200);
+  box-shadow: var(--shadow-xs);
   cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
 }
 
 .face:hover {
-  background: #f0f0f0;
+  border-color: var(--ink-300);
 }
 
 .face:active {
-  transform: scale(0.94);
+  transform: translateY(2px);
 }
 
 .badge {
   position: absolute;
-  top: -0.35rem;
-  right: -0.35rem;
+  top: -6px;
+  right: -6px;
   box-sizing: border-box;
-  min-width: 1.15rem;
-  height: 1.15rem;
-  padding: 0 0.25rem;
-  border-radius: 999px;
-  background: #2f6fed;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  background: var(--primary);
   color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  line-height: 1.15rem;
+  font-size: 11px;
+  font-weight: var(--fw-extra);
+  line-height: 20px;
   text-align: center;
+  box-shadow: var(--shadow-xs);
 }
 </style>

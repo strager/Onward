@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import './assets/onward-tokens.css'
+import './assets/main.css'
 import App from './App.vue'
 import ChallengeListView from './views/ChallengeListView.vue'
 import SettingsView from './views/SettingsView.vue'
