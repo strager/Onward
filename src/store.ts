@@ -113,6 +113,16 @@ export function removeLastEvents(id: string, count: number): void {
   persistEvents(id)
 }
 
+/** Look up a challenge by id (used by the report detail view). Reactive. */
+export function getChallenge(id: string): Challenge | undefined {
+  return challenges.find((c) => c.id === id)
+}
+
+/** Read a challenge's event series. Reactive; treat the result as read-only. */
+export function getEvents(id: string): TallyEvent[] {
+  return events[id] ?? []
+}
+
 /** How many interactions were logged for this challenge on the current local day. */
 export function countToday(id: string): number {
   const list = events[id]

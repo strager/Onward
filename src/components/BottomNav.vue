@@ -7,10 +7,17 @@ const route = useRoute()
 
 const tabs = [
   { to: '/', label: 'Challenges', icon: 'target' },
+  { to: '/reports', label: 'Reports', icon: 'bar-chart' },
   { to: '/settings', label: 'Settings', icon: 'settings' },
 ] as const
 
-const activeIndex = computed(() => tabs.findIndex((t) => t.to === route.path))
+// Prefix-aware so a drill-down like /reports/:id keeps its tab lit. The '/' tab must match
+// exactly, otherwise it would claim every path.
+const activeIndex = computed(() =>
+  tabs.findIndex((t) =>
+    t.to === '/' ? route.path === '/' : route.path === t.to || route.path.startsWith(t.to + '/'),
+  ),
+)
 
 // Hairline divider, hidden when it touches the active tab's pill (which absorbs it).
 function showDivider(i: number): boolean {

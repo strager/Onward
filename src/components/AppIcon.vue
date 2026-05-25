@@ -2,7 +2,7 @@
 // Lucide-style stroke icons (stroke 2.2, round caps) per the Onward design system.
 withDefaults(
   defineProps<{
-    name: 'target' | 'settings' | 'undo' | 'plus'
+    name: 'target' | 'settings' | 'undo' | 'plus' | 'bar-chart' | 'chevron-left'
     size?: number
     sw?: number
   }>(),
@@ -40,6 +40,15 @@ withDefaults(
     <template v-else-if="name === 'plus'">
       <path d="M12 5v14" />
       <path d="M5 12h14" />
+    </template>
+    <template v-else-if="name === 'bar-chart'">
+      <path d="M3 3v18h18" />
+      <path d="M8 17V9" />
+      <path d="M13 17V5" />
+      <path d="M18 17v-6" />
+    </template>
+    <template v-else-if="name === 'chevron-left'">
+      <path d="M15 18l-6-6 6-6" />
     </template>
   </svg>
 </template>
