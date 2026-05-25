@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import AppIcon from '@/components/AppIcon.vue'
 import {
   activeChallenges,
@@ -11,6 +11,14 @@ import {
 import type { Challenge } from '@/types'
 
 const newName = ref('')
+const newNameInput = ref<HTMLInputElement | null>(null)
+
+onMounted(async () => {
+  if (window.history.state?.focusNew) {
+    await nextTick()
+    newNameInput.value?.focus()
+  }
+})
 
 function add(): void {
   const created = addChallenge(newName.value)
@@ -43,6 +51,7 @@ function archive(challenge: Challenge): void {
 
     <form class="add" @submit.prevent="add">
       <input
+        ref="newNameInput"
         v-model="newName"
         class="input"
         type="text"

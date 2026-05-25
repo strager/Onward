@@ -19,7 +19,7 @@ import plant from '@/assets/illus-plant.svg'
       <img :src="plant" class="empty-art" alt="" />
       <p class="empty-text">
         Nothing to report yet.
-        <RouterLink to="/settings" class="empty-link">Add a challenge</RouterLink> and start logging.
+        <RouterLink :to="{ path: '/settings', state: { focusNew: true } }" class="empty-link">Add a challenge</RouterLink> and start logging.
       </p>
     </div>
 
