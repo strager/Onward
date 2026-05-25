@@ -20,3 +20,14 @@ npm run dev
 npm run type-check
 npm run build
 ```
+
+## Deployment
+
+Deploy the static site to https://onward.strager.dev with Ansible:
+
+```sh
+ansible-playbook -i deploy/inventory.ini deploy/playbook.yml
+```
+
+Requires Ansible locally and SSH access to the server. `onward.strager.dev` must
+resolve to the server before the first deploy (for the TLS certificate).

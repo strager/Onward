@@ -1,0 +1,108 @@
+---
+- name: Deploy Onward
+  hosts: onward
+
+  vars:
+    domain: onward.strager.dev
+    docroot: "/var/www/onward.strager.dev"
+    admin_email: s@strager.net
+
+  tasks:
+    - name: Create onward user
+      ansible.builtin.user:
+        name: onward
+        system: true
+        create_home: true
+        shell: /usr/sbin/nologin
+      become: true
+
+    - name: Create document root
+      ansible.builtin.file:
+        path: "{{ docroot }}"
+        state: directory
+        owner: onward
+        group: onward
+        mode: "0755"
+      become: true
+
+    - name: Build site locally
+      ansible.builtin.command:
+        cmd: npm run build
+        chdir: "{{ playbook_dir }}/.."
+      delegate_to: localhost
+      become: false
+
+    - name: Synchronize built site to document root
+      ansible.builtin.synchronize:
+        src: "{{ playbook_dir }}/../dist/"
+        dest: "{{ docroot }}/"
+        delete: true
+      become: true
+      become_user: onward
+
+    - name: Check whether the TLS certificate already exists
+      ansible.builtin.stat:
+        path: "/etc/letsencrypt/live/{{ domain }}/fullchain.pem"
+      register: tls_cert
+      become: true
+
+    - name: Deploy Apache vhost config for certbot
+      ansible.builtin.template:
+        src: onward.strager.dev.conf.j2
+        dest: /etc/apache2/sites-available/004-onward.strager.dev.conf
+        owner: root
+        group: root
+        mode: "0644"
+      vars:
+        enable_ssl: false
+      become: true
+      notify: Reload Apache
+      when: not tls_cert.stat.exists
+
+    - name: Enable Apache site for certbot
+      ansible.builtin.command:
+        cmd: a2ensite --quiet 004-onward.strager.dev
+      become: true
+      notify: Reload Apache
+      when: not tls_cert.stat.exists
+
+    - name: Reload Apache for certbot
+      ansible.builtin.meta: flush_handlers
+      when: not tls_cert.stat.exists
+
+    - name: Obtain Let's Encrypt certificate
+      ansible.builtin.command:
+        cmd: >-
+          certbot certonly --apache
+          -d {{ domain }}
+          --non-interactive --agree-tos
+          -m {{ admin_email }}
+          --keep-until-expiring
+        creates: "/etc/letsencrypt/live/{{ domain }}/fullchain.pem"
+      become: true
+      when: not tls_cert.stat.exists
+
+    - name: Deploy Apache vhost config
+      ansible.builtin.template:
+        src: onward.strager.dev.conf.j2
+        dest: /etc/apache2/sites-available/004-onward.strager.dev.conf
+        owner: root
+        group: root
+        mode: "0644"
+      vars:
+        enable_ssl: true
+      become: true
+      notify: Reload Apache
+
+    - name: Enable Apache site
+      ansible.builtin.command:
+        cmd: a2ensite --quiet 004-onward.strager.dev
+      become: true
+      notify: Reload Apache
+
+  handlers:
+    - name: Reload Apache
+      ansible.builtin.service:
+        name: apache2
+        state: reloaded
+      become: true

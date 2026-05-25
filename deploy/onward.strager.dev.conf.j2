@@ -1,0 +1,32 @@
+<VirtualHost *:80>
+	ServerName {{ domain }}
+
+	RewriteEngine on
+	RewriteRule ^ https://{{ domain }}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+
+{% if enable_ssl | default(false) %}
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+	ServerName {{ domain }}
+
+	ServerAdmin {{ admin_email }}
+	DocumentRoot {{ docroot }}
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	<Directory {{ docroot }}>
+		Require all granted
+		# App is an SPA.
+		FallbackResource /index.html
+	</Directory>
+
+	SSLCertificateFile /etc/letsencrypt/live/{{ domain }}/fullchain.pem
+	SSLCertificateKeyFile /etc/letsencrypt/live/{{ domain }}/privkey.pem
+	Include /etc/letsencrypt/options-ssl-apache.conf
+</VirtualHost>
+</IfModule>
+{% endif %}
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
