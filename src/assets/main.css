@@ -9,6 +9,19 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* Kill the grey/blue flash Android Chrome paints over tapped elements. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Disable double-tap-to-zoom on interactive elements so taps register
+   instantly (no waiting for a possible second tap). Panning + pinch-zoom
+   are unaffected. */
+button,
+a,
+label,
+input,
+[role="button"] {
+  touch-action: manipulation;
 }
 
 body {
