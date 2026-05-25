@@ -20,6 +20,14 @@
 		Require all granted
 		# App is an SPA.
 		FallbackResource /index.html
+
+		# Serve the PWA manifest with the spec MIME type.
+		AddType application/manifest+json .webmanifest
+
+		# Never cache the service worker, so updates propagate immediately.
+		<Files "sw.js">
+			Header set Cache-Control "no-cache"
+		</Files>
 	</Directory>
 
 	SSLCertificateFile /etc/letsencrypt/live/{{ domain }}/fullchain.pem

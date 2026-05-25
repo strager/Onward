@@ -39,3 +39,11 @@ const app = createApp(App)
 app.use(router)
 
 app.mount('#app')
+
+// Register a minimal service worker so the app is installable as a PWA.
+// Production only, to avoid interfering with the Vite dev server / HMR.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+  })
+}
